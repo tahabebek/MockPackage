@@ -1,0 +1,32 @@
+name: 'Test Preternatural Internal Build Action'
+inputs:
+  path:
+    description: 'Branch or commit'
+    required: false
+    default: 'main'
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v4
+
+    - name: Check out to github-action
+      uses: actions/checkout@v4
+      with:
+        repository: PreternaturalAI/github-action
+        ref: ${{ inputs.path }}
+        path: ./.github/actions/github-action
+    
+    - name: Checkout to Self
+      shell: bash
+      run: |
+        git config user.name tahabebek
+        git config user.email tsbebek@gmail.com
+        git clone https://github.com/tahabebek/MockPackage.git
+        mv MockPackage/* .
+
+    - name: Run github-action build 
+      uses: ./.github/actions/github-action/preternatural-build
+      with:
+        platforms: '["macOS"]'
+        configurations: '["debug"]'
